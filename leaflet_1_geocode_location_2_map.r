@@ -8,17 +8,17 @@ library(prettyunits)
 
 ## set parameters
 location_name <- "University of Notre Dame"
-location_name <- "New York"
 location_name <- "White House"
 location_name <- "Old Faithful"
+location_name <- "New York"
 
 zoom_level <- 12
 
-## geocode location
+## geocode location, then extract latitude and longitude
 geo_lat <- geo(location_name) %>% pull(lat)
 geo_long <- geo(location_name) %>% pull(long)
 
-## define map 
+## define map with Leaflet default style
 map01 <- leaflet() %>% 
   addTiles() %>% 
   setView(lat=geo_lat, lng=geo_long, zoom=zoom_level) %>% 
