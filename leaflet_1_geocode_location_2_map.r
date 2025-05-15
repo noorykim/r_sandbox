@@ -42,3 +42,5 @@ map02
 # Mike Chapple, Data Visualization in R with ggplot2 (2025) (LinkedIn Learning course), Section 4.3 and 4.4
   # This course uses Google Maps API and ggmaps package instead of Leaflet
 # https://github.com/rstudio/leaflet/blob/main/vignettes/articles/leaflet.Rmd
+# https://www.r-bloggers.com/2021/01/visualizing-geospatial-data-in-r-part-3-making-interactive-maps-with-leaflet-2/
+  # Why Leaflet is good for browsing interactively but not for printing
