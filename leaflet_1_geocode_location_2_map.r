@@ -38,7 +38,7 @@ map02
 ## References:
 # https://www.geeksforgeeks.org/leaflet-package-in-r/#
 # https://rstudioconnect.wlu.edu/bio185/_w_41e58484/c-13-leaflet.html
-# https://leaflet-extras.github.io/leaflet-providers/preview/
+# Style/Theme gallery:  https://leaflet-extras.github.io/leaflet-providers/preview/
 # Mike Chapple, Data Visualization in R with ggplot2 (2025) (LinkedIn Learning course), Section 4.3 and 4.4
   # This course uses Google Maps API and ggmaps package instead of Leaflet
 # https://github.com/rstudio/leaflet/blob/main/vignettes/articles/leaflet.Rmd
