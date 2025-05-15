@@ -41,3 +41,4 @@ map02
 # https://leaflet-extras.github.io/leaflet-providers/preview/
 # Mike Chapple, Data Visualization in R with ggplot2 (2025) (LinkedIn Learning course), Section 4.3 and 4.4
   # This course uses Google Maps API and ggmaps package instead of Leaflet
+# https://github.com/rstudio/leaflet/blob/main/vignettes/articles/leaflet.Rmd
