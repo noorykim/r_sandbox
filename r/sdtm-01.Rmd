@@ -1,0 +1,30 @@
+---
+title: "safetyData"
+author: "Noory Kim"
+date: "2025-05-16"
+output: pdf_document
+---
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. 
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r libraries}
+## "safetyData is an R package with sample CDISC clinical trial data sets."
+# install.packages("safetyData")
+library(safetyData)
+```
+
+```{r datasets}
+## Get list of datasets
+dataset_list <- data(package = "safetyData")$results[ , "Item"]
+dataset_list
+```
+
+```{r dm}
+## Get list of datasets
+head(sdtm_dm)
+head(sdtm_suppdm)
+``
