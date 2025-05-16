@@ -17,6 +17,17 @@ library(safetyData) # a package with sample CDISC data sets
 library(tidyverse)
 ```
 
+NOTES: 
+
+- with tidyverse, column names are case sensitive
+
+- tidyr
+  - pivot_wider() : transpose from long to wide
+
+- dplyr 
+  - select() : keep/drop columns
+  - filter() : select rows 
+
 ```{r datasets}
 ## Get list of datasets
 dataset_list <- data(package = "safetyData")$results[ , "Item"]
@@ -28,13 +39,6 @@ sdtm_suppds[c(1:2), c(3:8)]
 ```
 
 ## Transpose and drop columns not needed for ADaMs or TLFs: 
-
-NOTES: 
-
-- pivot_wider() << tidyr
-  - column names are case sensitive
-
-- select() << dplyr
   
 ```{r }
 cols_to_drop <- c("STUDYID", "RDOMAIN", "IDVAR", "QLABEL", "QORIG", "QEVAL")
