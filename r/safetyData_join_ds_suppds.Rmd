@@ -1,0 +1,74 @@
+---
+title: "safetyData: Join SDTM.DS with SUPPDS"
+author: "Noory Kim"
+date: "2025-05-16"
+output: 
+  pdf_document
+  # pdf_document:
+  #   latex_engine: xelatex
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r libraries, message=FALSE}
+library(safetyData) # a package with sample CDISC data sets
+library(tidyverse)
+```
+
+```{r datasets}
+## Get list of datasets
+dataset_list <- data(package = "safetyData")$results[ , "Item"]
+dataset_list[1:5]
+```
+# A. Transpose SUPPDS
+```{r ds}
+sdtm_suppds[c(1:2), c(3:8)]
+```
+
+## Transpose and drop columns not needed for ADaMs or TLFs: 
+
+NOTES: 
+
+- pivot_wider() << tidyr
+  - column names are case sensitive
+
+- select() << dplyr
+  
+```{r }
+cols_to_drop <- c("STUDYID", "RDOMAIN", "IDVAR", "QLABEL", "QORIG", "QEVAL")
+
+sdtm_suppds_t <- sdtm_suppds %>%  
+  pivot_wider(names_from=QNAM, values_from=QVAL) %>% 
+  select(-all_of(cols_to_drop)) 
+dim(sdtm_suppds_t)
+```
+
+```{r }
+sdtm_suppds_t[c(1:3),]
+```
+
+# B. Join DS with transposed SUPPDS
+```{r }
+ds001 <- sdtm_ds
+dim(ds001)
+```
+```{r }
+ds001[c(1:3), ]
+```
+
+```{r }
+ds002 <- left_join(ds001, sdtm_suppds_t, by=c("USUBJID"="USUBJID", "DSSEQ"="IDVARVAL"))
+dim(ds002)
+```
+## Check results: See rows where SUPPDS.ENTCRIT is not missing
+```{r }
+ds002_q1 <- ds002 %>% 
+  filter(!is.na(ENTCRIT))
+dim(ds002_q1)
+```
+
+```{r }
+head(ds002_q1)
+```
