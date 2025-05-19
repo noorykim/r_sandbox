@@ -1,0 +1,104 @@
+---
+title: "safetyData: Join SDTM with its SUPP dataset (function)"
+author: "Noory Kim"
+date: "2025-05-19"
+output: 
+  pdf_document
+  # pdf_document:
+  #   latex_engine: xelatex
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r libraries, message=FALSE}
+library(safetyData) # a package with sample CDISC data sets
+library(tidyverse)
+```
+
+NOTES: 
+
+- with tidyverse, column names are case sensitive
+
+- tidyr
+  - pivot_wider() : transpose from long to wide
+
+- dplyr 
+  - select() : keep/drop columns
+    - select(-any_of(vars)) : drop columns
+  - slice_head(n=) : keep the first n rows
+  
+- References: 
+  - select(-any_of(vars)): https://tidyselect.r-lib.org/reference/all_of.html
+
+```{r datasets_in_safetyData}
+## Get list of datasets
+dataset_list <- data(package = "safetyData")$results[ , "Item"]
+dataset_list[1:5]
+```
+# The function
+```{r function}
+join_domain_with_supp_by_seq <- function(domain){
+
+  ## concatenate string to get name of datasets to join and of the SEQ variable
+  name_main <- paste0("sdtm_", tolower(domain))
+  name_supp <- paste0("sdtm_supp", tolower(domain))
+  name_seq  <- paste0(toupper(domain), "SEQ")
+  
+  ## get main dataset
+  main <- get(name_main) %>% 
+    as_tibble() %>% 
+    rename("SEQ"=name_seq) ## rename --SEQ as SEQ, to simplify join statement below
+  
+  ## Columns in SUPP-- not needed for ADaMs or TLFs 
+  cols_to_drop <- c("STUDYID", "RDOMAIN", "IDVAR", "QLABEL", "QORIG", "QEVAL")
+  
+  ## get SUPP-- dataset and transpose
+  supp_t <- get(name_supp) %>% 
+    as_tibble() %>% 
+    pivot_wider(names_from=QNAM, values_from=QVAL) %>% 
+    select(-any_of(cols_to_drop))
+#    select(-one_of(cols_to_drop))
+  
+  ## join datasets 
+  output <- left_join(main, supp_t, by=c("USUBJID"="USUBJID", "SEQ"="IDVARVAL")) %>% 
+    rename(!!name_seq := "SEQ") ## rename SEQ back to --SEQ, now that the join is done
+  
+  ## output result
+  return(output)
+}
+```
+
+# Function calls
+
+## DS domain
+```{r ds, message=FALSE}
+ds <- join_domain_with_supp_by_seq(domain = "ds")
+```
+
+Warning appears even though any_of() is being used.
+
+Documented workaround shows an example for all_of(): 
+https://tidyselect.r-lib.org/reference/faq-external-vector.html
+
+```{r ds_tibble}
+# show as a dataframe rather than as a tibble (which gets truncated)
+ds %>% 
+  slice_head(n=3)
+```
+
+```{r ds_as_dataframe}
+# show as a dataframe rather than as a tibble (which gets truncated)
+ds %>% 
+  as.data.frame() %>% 
+  head(3)
+```
+
+## AE domain
+```{r ae}
+ae <- join_domain_with_supp_by_seq(domain = "ae")
+ae %>% 
+  as.data.frame() %>% 
+  head(3)
+```
