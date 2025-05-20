@@ -83,7 +83,7 @@ Documented workaround shows an example for all_of():
 https://tidyselect.r-lib.org/reference/faq-external-vector.html
 
 ```{r ds_tibble}
-# show as a dataframe rather than as a tibble (which gets truncated)
+# show the first few rows of a tibble
 ds %>% 
   slice_head(n=3)
 ```
@@ -98,6 +98,8 @@ ds %>%
 ## AE domain
 ```{r ae}
 ae <- join_domain_with_supp_by_seq(domain = "ae")
+
+# show as a dataframe rather than as a tibble (which gets truncated)
 ae %>% 
   as.data.frame() %>% 
   head(3)
