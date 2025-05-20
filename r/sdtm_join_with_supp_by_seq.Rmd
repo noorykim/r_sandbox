@@ -1,7 +1,7 @@
 ---
-title: "safetyData: Join SDTM with its SUPP dataset (function)"
+title: "Join SDTM with its SUPP dataset (function)"
 author: "Noory Kim"
-date: "2025-05-19"
+date: "started 2025-05-19, updated 2025-05-20"
 output: 
   pdf_document
   # pdf_document:
