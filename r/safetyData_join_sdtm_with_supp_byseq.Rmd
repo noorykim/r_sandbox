@@ -37,6 +37,7 @@ NOTES:
 dataset_list <- data(package = "safetyData")$results[ , "Item"]
 dataset_list[1:5]
 ```
+
 # The function
 ```{r function}
 join_domain_with_supp_by_seq <- function(domain){
@@ -82,13 +83,13 @@ Warning appears even though any_of() is being used.
 Documented workaround shows an example for all_of(): 
 https://tidyselect.r-lib.org/reference/faq-external-vector.html
 
-```{r ds_tibble}
+```{r ds_tibble_slice_head}
 # show the first few rows of a tibble
 ds %>% 
   slice_head(n=3)
 ```
 
-```{r ds_as_dataframe}
+```{r ds_dataframe_head}
 # show as a dataframe rather than as a tibble (which gets truncated)
 ds %>% 
   as.data.frame() %>% 
