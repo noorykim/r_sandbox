@@ -1,7 +1,7 @@
 ---
 title: "Join SDTM with its SUPP dataset (function)"
 author: "Noory Kim"
-date: "started 2025-05-19, updated 2025-05-20"
+date: "started 2025-05-19, updated 2025-05-22"
 output: 
   pdf_document
   # pdf_document:
@@ -31,40 +31,62 @@ NOTES:
   
 - References: 
   - select(-any_of(vars)): https://tidyselect.r-lib.org/reference/all_of.html
+  
+UPDATES
+
+- 2025-05-22: Added parameters ds_name and supp_name to the function
 
 ```{r datasets_in_safetyData}
 ## Get list of datasets
 dataset_list <- data(package = "safetyData")$results[ , "Item"]
-dataset_list[1:5]
+dataset_list
 ```
 
 # The function
-```{r function}
-join_domain_with_supp_by_seq <- function(domain){
 
-  ## concatenate string to get name of datasets to join and of the SEQ variable
-  name_main <- paste0("sdtm_", tolower(domain))
-  name_supp <- paste0("sdtm_supp", tolower(domain))
-  name_seq  <- paste0(toupper(domain), "SEQ")
+Parameters
+
+- domain: SDTM domain abbreviation 
+
+- ds_name: name of main dataset
+
+- supp_name (default: NULL): name of existing SUPP-- dataset
+
+```{r function}
+join_domain_with_supp_by_seq <- function(domain, ds_name, supp_name=NULL){
+
+## concatenate string to get name of datasets to join and of the SEQ variable
+  name_main <- paste0(ds_name)
   
-  ## get main dataset
-  main <- get(name_main) %>% 
-    as_tibble() %>% 
-    rename("SEQ"=name_seq) ## rename --SEQ as SEQ, to simplify join statement below
+  if(!is.null(supp_name)){
+    name_supp <- paste0(supp_name)
+    name_seq  <- paste0(toupper(domain), "SEQ")
+  } 
   
-  ## Columns in SUPP-- not needed for ADaMs or TLFs 
-  cols_to_drop <- c("STUDYID", "RDOMAIN", "IDVAR", "QLABEL", "QORIG", "QEVAL")
-  
-  ## get SUPP-- dataset and transpose
-  supp_t <- get(name_supp) %>% 
-    as_tibble() %>% 
-    pivot_wider(names_from=QNAM, values_from=QVAL) %>% 
-    select(-any_of(cols_to_drop))
-#    select(-one_of(cols_to_drop))
-  
-  ## join datasets 
-  output <- left_join(main, supp_t, by=c("USUBJID"="USUBJID", "SEQ"="IDVARVAL")) %>% 
-    rename(!!name_seq := "SEQ") ## rename SEQ back to --SEQ, now that the join is done
+## get main dataset
+  if(is.null(supp_name)){
+    output <- get(name_main) %>% 
+      as_tibble() 
+  }
+  else if(!is.null(supp_name)){
+    main <- get(name_main) %>% 
+      as_tibble() %>% 
+      rename("SEQ"=name_seq) ## rename --SEQ as SEQ, to simplify join statement below
+    
+    ## Columns in SUPP-- not needed for ADaMs or TLFs 
+    cols_to_drop <- c("STUDYID", "RDOMAIN", "IDVAR", "QLABEL", "QORIG", "QEVAL")
+    
+    ## get SUPP-- dataset and transpose
+    supp_t <- get(name_supp) %>% 
+      as_tibble() %>% 
+      pivot_wider(names_from=QNAM, values_from=QVAL) %>% 
+      mutate(SEQ = as.numeric(IDVARVAL)) %>% 
+      select(-any_of(cols_to_drop))
+
+    ## join datasets 
+    output <- left_join(main, supp_t, by=c("USUBJID"="USUBJID", "SEQ"="SEQ")) %>% 
+      rename(!!name_seq := "SEQ") ## rename SEQ back to --SEQ, now that the join is done
+  }
   
   ## output result
   return(output)
@@ -75,7 +97,7 @@ join_domain_with_supp_by_seq <- function(domain){
 
 ## DS domain
 ```{r ds, message=FALSE}
-ds <- join_domain_with_supp_by_seq(domain = "ds")
+ds <- join_domain_with_supp_by_seq(domain = "ds", ds_name = "sdtm_ds", supp_name = "sdtm_suppds")
 ```
 
 Warning appears even though any_of() is being used.
@@ -96,12 +118,22 @@ ds %>%
   head(3)
 ```
 
-## AE domain
+## AE domain, with SUPPAE
 ```{r ae}
-ae <- join_domain_with_supp_by_seq(domain = "ae")
+ae <- join_domain_with_supp_by_seq(domain = "ae", ds_name = "sdtm_ae", supp_name = "sdtm_suppae")
 
 # show as a dataframe rather than as a tibble (which gets truncated)
 ae %>% 
+  as.data.frame() %>% 
+  head(3)
+```
+
+## QS domain, without SUPP--
+```{r qs}
+qs <- join_domain_with_supp_by_seq(domain = "qs", ds_name = "sdtm_qs")
+
+# show as a dataframe rather than as a tibble (which gets truncated)
+qs %>% 
   as.data.frame() %>% 
   head(3)
 ```
