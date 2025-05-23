@@ -23,10 +23,14 @@ NOTES:
 
 - tidyr
   - pivot_wider() : transpose from long to wide
+  - mutate() : change column from character to numeric
 
 - dplyr 
-  - select() : keep/drop columns
-    - select(-any_of(vars)) : drop columns
+  - select() 
+    - keep/drop columns
+      - select(-any_of(vars)) : drop columns
+    - reorder columns 
+      - everything() : columns not explicitly named
   - slice_head(n=) : keep the first n rows
   
 - References: 
@@ -81,7 +85,8 @@ join_domain_with_supp_by_seq <- function(domain, ds_name, supp_name=NULL){
       as_tibble() %>% 
       pivot_wider(names_from=QNAM, values_from=QVAL) %>% 
       mutate(SEQ = as.numeric(IDVARVAL)) %>% 
-      select(-any_of(cols_to_drop))
+      select(-any_of(cols_to_drop)) %>% 
+      select(SEQ, everything())
 
     ## join datasets 
     output <- left_join(main, supp_t, by=c("USUBJID"="USUBJID", "SEQ"="SEQ")) %>% 
