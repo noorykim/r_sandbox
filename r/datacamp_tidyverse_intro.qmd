@@ -1,0 +1,115 @@
+---
+title: "DataCamp: Intro to Tidyverse"
+author: "N. Kim"
+date: last-modified
+date-format: YYYY-MM-DD HH:mm 
+format: pdf
+editor: visual
+---
+
+<https://app.datacamp.com/learn/courses/introduction-to-the-tidyverse>
+
+Notes started on 2025-06-05.
+
+## filter(), arrange(), mutate()
+
+Comparison chart
+
++--------------------------------+--------------------------------+----------------------------------+
+| Task                           | SAS                            | R Tidyverse                      |
+|                                |                                |                                  |
+|                                |                                | %\>% clause                      |
++================================+================================+==================================+
+| Filter rows                    | `where` crit1 `and` crit2`;`   | `filter(`crit1, crit2`)`         |
+|                                |                                |                                  |
+|                                | `where` crit1 `or` crit2`;`    | `filter(`crit1 \| crit2`)`       |
++--------------------------------+--------------------------------+----------------------------------+
+| Sort rows                      | `proc sort;`                   | `arrange(var1, desc(`var2`))`    |
+|                                |                                |                                  |
+|                                | `by` var1 `descending` var2`;` |                                  |
++--------------------------------+--------------------------------+----------------------------------+
+| Transform an existing variable | var = var / 100;               | `mutate(`var = var / 100`)`      |
++--------------------------------+--------------------------------+----------------------------------+
+| Add a new variable             | newvar = var1 \* 100;          | `mutate(`newvar = var1 \* 100`)` |
++--------------------------------+--------------------------------+----------------------------------+
+
+## ggplot2
+
+`ggplot(`dataset, `aes(x=`ivar, `y=`dvar, ...`))` `+` \[...\]
+
+`aes` clause
+
++--------------+------------------------------------+
+| Type         | ggplot2                            |
++==============+====================================+
+| `x=`         | variable for x-axis                |
++--------------+------------------------------------+
+| `y=`         | variable for y-axis                |
++--------------+------------------------------------+
+| `color=`     | group variable for color coding    |
++--------------+------------------------------------+
+| `size=`      | group variable for size aesthestic |
++--------------+------------------------------------+
+
+Additional clauses
+
++----------------------------+---------------------------------------------------------------+
+| \+ clause                  | result                                                        |
++============================+===============================================================+
+| `geom_point()`             | produce a scatterplot                                         |
++----------------------------+---------------------------------------------------------------+
+| `geom_boxplot()`           | produce a boxplot                                             |
++----------------------------+---------------------------------------------------------------+
+| `scale_x_log10()`          | have x-axis on a log scale                                    |
++----------------------------+---------------------------------------------------------------+
+| `scale_y_log10()`          | have y-axis on a log scale                                    |
++----------------------------+---------------------------------------------------------------+
+| `facet_wrap(~` groupVar`)` | produce subplots, one for each value of the grouping variable |
++----------------------------+---------------------------------------------------------------+
+| `expand_limits(y = 0)`     | start the y-axis at zero                                      |
++----------------------------+---------------------------------------------------------------+
+
+## summarize()
+
+`+ summarize(`newVar = function`(`existingVar`))`
+
+Functions you can use for summarizing:
+
+-   `sum()`
+
+-   `mean()`, `median()`
+
+-   `min()`, `max()`
+
+## group_by()
+
+Combine group_by() with summarize() to get stats for each group (or combination of groups).
+
+```{r}
+#| output: false
+library(dplyr)
+library(ggplot2)
+library(gapminder)
+```
+
+```{r}
+head(gapminder)
+```
+
+```{r}
+#| output: false
+# Find median life expectancy, by continent and year 
+median_by_continent_year <- gapminder %>% 
+    group_by(continent, year) %>%
+    summarize(medianLifeExp = median(lifeExp))
+```
+
+```{r}
+median_by_continent_year
+```
+
+```{r}
+ggplot(median_by_continent_year, aes(x=year, y=medianLifeExp)) +
+  geom_point() +
+  facet_wrap(~ continent)      
+```
